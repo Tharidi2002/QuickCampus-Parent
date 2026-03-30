@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickCampus Mini - Student Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            border-bottom-color: #007bff;
+            color: #007bff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .student-list {
+            margin-top: 20px;
+        }
+
+        .student-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background: #f9f9f9;
+        }
+
+        .student-item h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .profile-image {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 50%;
+            margin-top: 10px;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QuickCampus Mini - Student Management System</h1>
+        
+        <div id="message" class="message" style="display: none;"></div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('students')">Students</button>
+            <button class="tab" onclick="showTab('profiles')">Profiles</button>
+        </div>
+
+        <!-- Students Tab -->
+        <div id="students-tab" class="tab-content active">
+            <h2>Student Management</h2>
+            
+            <form id="student-form">
+                <div class="form-group">
+                    <label for="firstName">First Name:</label>
+                    <input type="text" id="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name:</label>
+                    <input type="text" id="lastName" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age:</label>
+                    <input type="number" id="age" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number:</label>
+                    <input type="text" id="phoneNumber">
+                </div>
+                <div class="form-group">
+                    <label for="address">Address:</label>
+                    <textarea id="address" rows="3"></textarea>
+                </div>
+                <button type="submit">Add Student</button>
+                <button type="button" onclick="loadStudents()">Refresh</button>
+            </form>
+
+            <div class="student-list">
+                <h3>Student List</h3>
+                <div id="students-container" class="loading">Loading students...</div>
+            </div>
+        </div>
+
+        <!-- Profiles Tab -->
+        <div id="profiles-tab" class="tab-content">
+            <h2>Profile Management</h2>
+            
+            <form id="profile-form">
+                <div class="form-group">
+                    <label for="profileStudentId">Student ID:</label>
+                    <input type="number" id="profileStudentId" required>
+                </div>
+                <div class="form-group">
+                    <label for="bio">Bio:</label>
+                    <textarea id="bio" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="profileImage">Profile Image:</label>
+                    <input type="file" id="profileImage" accept="image/*">
+                </div>
+                <button type="submit">Update Profile</button>
+            </form>
+
+            <div class="student-list">
+                <h3>Profile List</h3>
+                <div id="profiles-container" class="loading">Loading profiles...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080';
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load data for the selected tab
+            if (tabName === 'students') {
+                loadStudents();
+            } else if (tabName === 'profiles') {
+                loadProfiles();
+            }
+        }
+
+        // Student Management
+        document.getElementById('student-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const studentData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                age: parseInt(document.getElementById('age').value),
+                email: document.getElementById('email').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                address: document.getElementById('address').value
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/students`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(studentData)
+                });
+                
+                if (response.ok) {
+                    showMessage('Student added successfully!', 'success');
+                    document.getElementById('student-form').reset();
+                    loadStudents();
+                } else {
+                    showMessage('Failed to add student', 'error');
+                }
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+            }
+        });
+
+        async function loadStudents() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/students`);
+                const students = await response.json();
+                
+                const container = document.getElementById('students-container');
+                container.innerHTML = '';
+                
+                if (students.length === 0) {
+                    container.innerHTML = '<p>No students found.</p>';
+                    return;
+                }
+                
+                students.forEach(student => {
+                    const studentDiv = document.createElement('div');
+                    studentDiv.className = 'student-item';
+                    studentDiv.innerHTML = `
+                        <h3>${student.firstName} ${student.lastName}</h3>
+                        <p><strong>ID:</strong> ${student.id}</p>
+                        <p><strong>Age:</strong> ${student.age}</p>
+                        <p><strong>Email:</strong> ${student.email}</p>
+                        <p><strong>Phone:</strong> ${student.phoneNumber || 'N/A'}</p>
+                        <p><strong>Address:</strong> ${student.address || 'N/A'}</p>
+                        <button onclick="deleteStudent(${student.id})">Delete</button>
+                    `;
+                    container.appendChild(studentDiv);
+                });
+            } catch (error) {
+                document.getElementById('students-container').innerHTML = '<p>Error loading students</p>';
+            }
+        }
+
+        async function deleteStudent(id) {
+            if (confirm('Are you sure you want to delete this student?')) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/students/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        showMessage('Student deleted successfully!', 'success');
+                        loadStudents();
+                    } else {
+                        showMessage('Failed to delete student', 'error');
+                    }
+                } catch (error) {
+                    showMessage('Error: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Profile Management
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const studentId = document.getElementById('profileStudentId').value;
+            const bio = document.getElementById('bio').value;
+            const profileImage = document.getElementById('profileImage').files[0];
+            
+            try {
+                // First update profile text data
+                const profileData = {
+                    studentId: parseInt(studentId),
+                    firstName: '', // These would come from student service
+                    lastName: '',
+                    bio: bio
+                };
+                
+                const profileResponse = await fetch(`${API_BASE_URL}/api/profiles`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(profileData)
+                });
+                
+                // Then upload image if provided
+                if (profileImage) {
+                    const formData = new FormData();
+                    formData.append('file', profileImage);
+                    
+                    const imageResponse = await fetch(`${API_BASE_URL}/api/profiles/student/${studentId}/upload-image`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+                
+                showMessage('Profile updated successfully!', 'success');
+                document.getElementById('profile-form').reset();
+                loadProfiles();
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+            }
+        });
+
+        async function loadProfiles() {
+            try {
+                // This would need to be enhanced to load all profiles
+                // For now, we'll show a message
+                const container = document.getElementById('profiles-container');
+                container.innerHTML = '<p>Enter a Student ID to view/update profile</p>';
+            } catch (error) {
+                document.getElementById('profiles-container').innerHTML = '<p>Error loading profiles</p>';
+            }
+        }
+
+        // Load students on page load
+        loadStudents();
+    </script>
+</body>
+</html>

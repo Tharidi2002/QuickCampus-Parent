@@ -1,0 +1,33 @@
+server:
+  port: 8082
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/quickcampus_profile
+
+gcp:
+  project:
+    id: your-gcp-project-id
+  bucket:
+    name: quickcampus-profile-images
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    lk.ijse.quickcampus.profileservice: DEBUG
