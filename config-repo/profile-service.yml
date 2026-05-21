@@ -1,33 +1,10 @@
-server:
-  port: 8082
-
-spring:
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/quickcampus_profile
-
-gcp:
-  project:
-    id: your-gcp-project-id
-  bucket:
-    name: quickcampus-profile-images
-
+# Eureka client configuration
 eureka:
   client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
+    # A list of Eureka servers for the client to connect to.
+    # Using the internal IPs of the Eureka cluster nodes.
+    serviceUrl:
+      defaultZone: http://10.148.0.3:9001/eureka/,http://10.148.0.4:9001/eureka/,http://10.148.0.5:9001/eureka/
   instance:
+    # Prefer registering with the IP address of the instance.
     prefer-ip-address: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-
-logging:
-  level:
-    lk.ijse.quickcampus.profileservice: DEBUG

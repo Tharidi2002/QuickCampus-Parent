@@ -1,39 +1,10 @@
-server:
-  port: 8080
-
-spring:
-  cloud:
-    gateway:
-      routes:
-        - id: student-service
-          uri: lb://student-service
-          predicates:
-            - Path=/api/students/**
-          filters:
-            - StripPrefix=0
-        - id: profile-service
-          uri: lb://profile-service
-          predicates:
-            - Path=/api/profiles/**
-          filters:
-            - StripPrefix=0
-
+# Eureka client configuration
 eureka:
   client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
+    # A list of Eureka servers for the client to connect to.
+    # Using the internal IPs of the Eureka cluster nodes.
+    serviceUrl:
+      defaultZone: http://10.148.0.3:9001/eureka/,http://10.148.0.4:9001/eureka/,http://10.148.0.5:9001/eureka/
   instance:
+    # Prefer registering with the IP address of the instance.
     prefer-ip-address: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG

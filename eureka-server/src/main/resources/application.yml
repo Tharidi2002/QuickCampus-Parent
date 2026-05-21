@@ -1,29 +1,23 @@
+# Server port for the Eureka instance
 server:
-  port: 8761
+  port: 9001
 
+# Spring application name, used for service registration
 spring:
   application:
-    name: eureka-server
+    name: INTERNAL-SERVICE-REGISTRY
 
+# Eureka server and client configuration
 eureka:
   instance:
-    hostname: localhost
+    # Prefer using the instance's IP address for registration rather than its hostname.
+    prefer-ip-address: true
   client:
-    register-with-eureka: false
-    fetch-registry: false
-    service-url:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-
-logging:
-  level:
-    com.netflix.eureka: DEBUG
-    com.netflix.discovery: DEBUG
+    # This instance should register itself with other Eureka servers in the cluster.
+    registerWithEureka: true
+    # This instance should fetch the registry information from other Eureka servers.
+    fetchRegistry: true
+    # A list of other Eureka servers in the cluster for peer-to-peer replication.
+    # This creates a resilient, high-availability service registry.
+    serviceUrl:
+      defaultZone: http://10.148.0.3:9001/eureka/,http://10.148.0.4:9001/eureka/,http://10.148.0.5:9001/eureka/

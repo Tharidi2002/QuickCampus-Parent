@@ -1,13 +1,26 @@
 # QuickCampus Mini - Student Management System
 
 ## Student Information
-- **Student Name:** [Your Name]
-- **Student Number:** [Your Student Number]
+- **Student Name:** [H A T Thisarani]
+- **Student Number:** [2301692003]
 - **Slack Handle:** [Your Slack Handle]
-- **GCP Project ID:** [Your GCP Project ID]
+- **GCP Project ID:** studio-2575850207-57450
+- **GCP Project Number:** 358085303516
 
 ## Project Description
 QuickCampus Mini is a cloud-native microservice-based student management system built for the Enterprise Cloud Architecture (ITS 2130) final project. This system demonstrates the implementation of modern cloud architecture patterns including microservices, service discovery, configuration management, API gateway, and cloud-native deployment.
+
+## Deployment Details
+
+This project is deployed on Google Cloud Platform with the following key endpoints:
+
+- **API Gateway External IP:** `34.157.230.80`
+- **Web App Frontend IP:** `35.240.166.166`
+- **Config Server Internal LB:** `10.148.0.6:9000`
+- **Eureka Server Cluster Nodes:**
+  - `10.148.0.3:9001`
+  - `10.148.0.4:9001`
+  - `10.148.0.5:9001`
 
 ## Technology Stack
 
@@ -36,11 +49,11 @@ QuickCampus Mini is a cloud-native microservice-based student management system 
 ## Architecture Overview
 
 ### Microservices
-1. **Eureka Server** (Port 8761) - Service Registry
-2. **Config Server** (Port 8888) - Centralized Configuration
+1. **Eureka Server** (Port 9001) - Service Registry
+2. **Config Server** (Port 9000) - Centralized Configuration
 3. **Student Service** (Port 8081) - Student Management (MySQL)
 4. **Profile Service** (Port 8082) - Profile Management (MongoDB + Cloud Storage)
-5. **API Gateway** (Port 8080) - Single Entry Point
+5. **API Gateway** (Port 7000) - Single Entry Point
 
 ### Database Integration
 - **MySQL:** Stores student basic information (name, age, email, etc.)

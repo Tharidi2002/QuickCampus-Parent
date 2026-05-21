@@ -3,7 +3,7 @@
 # GCP Deployment Script for QuickCampus Mini
 # This script deploys the entire microservices platform to GCP
 
-PROJECT_ID="your-gcp-project-id"
+PROJECT_ID="studio-2575850207-57450"
 REGION="us-central1"
 ZONE="us-central1-a"
 

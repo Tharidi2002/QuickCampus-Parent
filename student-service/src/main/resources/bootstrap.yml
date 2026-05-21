@@ -1,7 +1,10 @@
+# Spring application name
 spring:
   application:
     name: student-service
+  # Cloud configuration settings for connecting to the Config Server
   cloud:
     config:
-      uri: http://localhost:8888
-      fail-fast: true
+      # The URI of the Spring Cloud Config Server.
+      # This is the internal load balancer IP for the config server.
+      uri: http://10.148.0.6:9000
