@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: course-service
+          uri: lb://COURSE-SERVICE
+          predicates:
+            - Path=/course-service/**
+        - id: student-service
+          uri: lb://STUDENT-SERVICE
+          predicates:
+            - Path=/student-service/**
+        - id: media-service
+          uri: lb://MEDIA-SERVICE
+          predicates:
+            - Path=/media-service/**
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://10.128.0.13:8761/eureka/
